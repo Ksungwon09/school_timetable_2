@@ -13,13 +13,21 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == ACTION_UPDATE_WIDGET) {
-            // Update widget
+            // Update timetable widget
             val appWidgetManager = AppWidgetManager.getInstance(context)
-            val componentName = ComponentName(context, TimetableWidgetProvider::class.java)
-            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+            val timetableComponentName = ComponentName(context, TimetableWidgetProvider::class.java)
+            val timetableAppWidgetIds = appWidgetManager.getAppWidgetIds(timetableComponentName)
 
-            for (id in appWidgetIds) {
+            for (id in timetableAppWidgetIds) {
                 TimetableWidgetProvider.updateAppWidget(context, appWidgetManager, id)
+            }
+
+            // Update meal widget
+            val mealComponentName = ComponentName(context, MealWidgetProvider::class.java)
+            val mealAppWidgetIds = appWidgetManager.getAppWidgetIds(mealComponentName)
+
+            for (id in mealAppWidgetIds) {
+                MealWidgetProvider.updateAppWidget(context, appWidgetManager, id)
             }
 
             // Schedule the next one

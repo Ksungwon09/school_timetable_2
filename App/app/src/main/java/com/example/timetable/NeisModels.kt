@@ -49,6 +49,20 @@ data class TimetableRow(
     val ITRT_CNTNT: String?
 )
 
+data class MealServiceDietInfoResponse(
+    val mealServiceDietInfo: List<MealInfoWrapper>?
+)
+
+data class MealInfoWrapper(
+    val head: List<Head>? = null,
+    val row: List<MealRow>? = null
+)
+
+data class MealRow(
+    val MLSV_YMD: String?,
+    val DDISH_NM: String?
+)
+
 data class Head(
     val list_total_count: Int?,
     val RESULT: ResultCode?
