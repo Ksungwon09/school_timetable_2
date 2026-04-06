@@ -39,4 +39,15 @@ interface NeisApiService {
         @Query("TI_FROM_YMD") tiFromYmd: String,
         @Query("TI_TO_YMD") tiToYmd: String
     ): TimetableResponse
+
+    @GET("mealServiceDietInfo")
+    suspend fun getMealInfo(
+        @Query("KEY") apiKey: String,
+        @Query("Type") type: String = "json",
+        @Query("pIndex") pIndex: Int = 1,
+        @Query("pSize") pSize: Int = 100,
+        @Query("ATPT_OFCDC_SC_CODE") ofcdcCode: String,
+        @Query("SD_SCHUL_CODE") schoolCode: String,
+        @Query("MLSV_YMD") mlsvYmd: String
+    ): MealServiceDietInfoResponse
 }
