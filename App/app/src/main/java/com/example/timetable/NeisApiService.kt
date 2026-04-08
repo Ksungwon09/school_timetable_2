@@ -48,6 +48,8 @@ interface NeisApiService {
         @Query("pSize") pSize: Int = 100,
         @Query("ATPT_OFCDC_SC_CODE") ofcdcCode: String,
         @Query("SD_SCHUL_CODE") schoolCode: String,
-        @Query("MLSV_YMD") mlsvYmd: String
+        @Query("MLSV_YMD") mlsvYmd: String?,
+        @Query("MLSV_FROM_YMD") mlsvFromYmd: String? = null,
+        @Query("MLSV_TO_YMD") mlsvToYmd: String? = null
     ): MealServiceDietInfoResponse
 }

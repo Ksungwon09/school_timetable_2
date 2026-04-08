@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import android.content.Intent
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,9 +59,24 @@ class MainActivity : AppCompatActivity() {
         setupUI()
 
         if (prefs.isSetupComplete()) {
-            showTimetableScreen()
+            if (intent.getBooleanExtra("SHOW_MEAL", false)) {
+                showMealPlanScreen()
+            } else {
+                showTimetableScreen()
+            }
         } else {
             showSearchScreen()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (prefs.isSetupComplete()) {
+            if (intent?.getBooleanExtra("SHOW_MEAL", false) == true) {
+                showMealPlanScreen()
+            } else {
+                showTimetableScreen()
+            }
         }
     }
 
@@ -108,6 +124,14 @@ class MainActivity : AppCompatActivity() {
         binding.btnNextWeek.setOnClickListener {
             currentWeekStart.add(Calendar.WEEK_OF_YEAR, 1)
             loadTimetable()
+        }
+
+        binding.btnShowMeal.setOnClickListener {
+            showMealPlanScreen()
+        }
+
+        binding.btnBackToTimetable.setOnClickListener {
+            showTimetableScreen()
         }
     }
 
@@ -182,10 +206,91 @@ class MainActivity : AppCompatActivity() {
     fun showTimetableScreen() {
         binding.layoutSearch.visibility = View.GONE
         binding.layoutClassSelection.visibility = View.GONE
+        binding.layoutMealPlan.visibility = View.GONE
         binding.layoutTimetable.visibility = View.VISIBLE
 
         binding.tvTimetableTitle.text = "${prefs.schoolName} ${prefs.grade}학년 ${prefs.classNm}반"
         loadTimetable()
+    }
+
+    fun showMealPlanScreen() {
+        binding.layoutSearch.visibility = View.GONE
+        binding.layoutClassSelection.visibility = View.GONE
+        binding.layoutTimetable.visibility = View.GONE
+        binding.layoutMealPlan.visibility = View.VISIBLE
+
+        binding.tvMealPlanTitle.text = "${prefs.schoolName} 이번 달 급식"
+        loadMealPlan()
+    }
+
+    private fun loadMealPlan() {
+        val ofcdcCode = prefs.ofcdcCode ?: return
+        val schoolCode = prefs.schoolCode ?: return
+
+        lifecycleScope.launch {
+            binding.progressBar.visibility = View.VISIBLE
+            try {
+                val cal = Calendar.getInstance()
+                val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                cal.set(Calendar.DAY_OF_MONTH, 1)
+                val startDateStr = dateFormat.format(cal.time)
+
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+                val endDateStr = dateFormat.format(cal.time)
+
+                // Fetch monthly meals. We might need a new API call, but we can iterate or fetch multiple days.
+                // The NEIS API allows querying by date range if MLVS_YMD is not used but TI_FROM_YMD/TI_TO_YMD
+                // Wait, Meal API uses MLSV_FROM_YMD and MLSV_TO_YMD for ranges.
+                val response = neisApi.getMealInfo(
+                    apiKey = API_KEY,
+                    ofcdcCode = ofcdcCode,
+                    schoolCode = schoolCode,
+                    mlsvYmd = null,
+                    mlsvFromYmd = startDateStr,
+                    mlsvToYmd = endDateStr
+                )
+
+                val rows = response.mealServiceDietInfo?.find { it.row != null }?.row
+                binding.tableMealPlan.removeAllViews()
+
+                if (!rows.isNullOrEmpty()) {
+                    for (meal in rows) {
+                        val row = TableRow(this@MainActivity)
+                        val tvDate = TextView(this@MainActivity)
+
+                        val dateRaw = meal.MLSV_YMD ?: ""
+                        val dateFormatted = if (dateRaw.length == 8) {
+                            "${dateRaw.substring(4,6)}.${dateRaw.substring(6,8)}"
+                        } else dateRaw
+
+                        tvDate.text = dateFormatted
+                        tvDate.setPadding(16, 16, 16, 16)
+                        tvDate.gravity = Gravity.CENTER
+                        tvDate.setBackgroundColor(Color.LTGRAY)
+                        row.addView(tvDate)
+
+                        val tvMeal = TextView(this@MainActivity)
+                        val rawMeal = meal.DDISH_NM ?: ""
+                        val cleanedMeal = rawMeal.replace("<br/>", "\n")
+                            .replace(Regex("\\([^)]*\\)"), "")
+                            .replace(".", ".\u200B")
+
+                        tvMeal.text = cleanedMeal
+                        tvMeal.setPadding(16, 16, 16, 16)
+                        tvMeal.setBackgroundResource(android.R.drawable.btn_default)
+                        row.addView(tvMeal)
+
+                        binding.tableMealPlan.addView(row)
+                    }
+                } else {
+                    Toast.makeText(this@MainActivity, "이번 달 급식 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@MainActivity, "급식 정보 불러오기 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.progressBar.visibility = View.GONE
+            }
+        }
     }
 
     private fun loadTimetable() {
