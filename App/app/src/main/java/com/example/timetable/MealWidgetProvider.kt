@@ -112,6 +112,8 @@ class MealWidgetProvider : AppWidgetProvider() {
                     val rawMeal = rows[0].DDISH_NM ?: ""
                     // Remove <br/> and format
                     val cleanedMeal = rawMeal.replace("<br/>", "\n")
+                        .replace("(", " (")
+                        .replace(".", ".\u200B")
 
                     val entity = MealEntity(
                         date = todayStr,
