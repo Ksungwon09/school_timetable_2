@@ -30,6 +30,14 @@ class Prefs(context: Context) {
         get() = prefs.getString("classNm", null)
         set(value) = prefs.edit().putString("classNm", value).apply()
 
+    var widgetTextSize: Int
+        get() = prefs.getInt("widgetTextSize", 14)
+        set(value) = prefs.edit().putInt("widgetTextSize", value).apply()
+
+    var widgetTextBold: Boolean
+        get() = prefs.getBoolean("widgetTextBold", false)
+        set(value) = prefs.edit().putBoolean("widgetTextBold", value).apply()
+
     fun isSetupComplete(): Boolean {
         return ofcdcCode != null && schoolCode != null && grade != null && classNm != null
     }

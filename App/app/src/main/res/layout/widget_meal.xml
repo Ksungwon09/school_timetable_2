@@ -43,7 +43,7 @@
         android:textColor="#000000"
         android:textStyle="bold"
         android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="20sp"
+        android:autoSizeMinTextSize="16sp"
         android:autoSizeMaxTextSize="64sp"
         android:autoSizeStepGranularity="2sp" />
 

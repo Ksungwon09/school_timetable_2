@@ -24,6 +24,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SettingsActivity" />
+
         <receiver
             android:name=".TimetableWidgetProvider"
             android:exported="true">
