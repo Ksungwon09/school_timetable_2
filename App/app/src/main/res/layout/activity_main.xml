@@ -112,6 +112,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="재검색" />
+
+            <Button
+                android:id="@+id/btnShowMeal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="급식 보기" />
         </LinearLayout>
 
         <LinearLayout
@@ -161,6 +167,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:stretchColumns="1,2,3,4,5" />
+
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- Meal Plan Section -->
+    <LinearLayout
+        android:id="@+id/layoutMealPlan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvMealPlanTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="이번 달 급식" />
+
+            <Button
+                android:id="@+id/btnBackToTimetable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="시간표 보기" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp">
+
+            <TableLayout
+                android:id="@+id/tableMealPlan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1" />
 
         </ScrollView>
     </LinearLayout>

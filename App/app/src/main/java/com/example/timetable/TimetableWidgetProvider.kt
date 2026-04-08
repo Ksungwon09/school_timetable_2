@@ -52,6 +52,14 @@ class TimetableWidgetProvider : AppWidgetProvider() {
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             views.setOnClickPendingIntent(R.id.widgetContainer, pendingIntent)
 
+            val refreshIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = AlarmReceiver.ACTION_UPDATE_WIDGET
+            }
+            val refreshPendingIntent = PendingIntent.getBroadcast(
+                context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.btnRefreshWidget, refreshPendingIntent)
+
             if (!prefs.isSetupComplete()) {
                 views.setTextViewText(R.id.tvWidgetTitle, "시간표")
                 views.setViewVisibility(R.id.tvWidgetEmpty, android.view.View.VISIBLE)

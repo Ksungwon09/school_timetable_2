@@ -46,7 +46,9 @@ class MealWidgetProvider : AppWidgetProvider() {
             val prefs = Prefs(context)
             val views = RemoteViews(context.packageName, R.layout.widget_meal)
 
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java).apply {
+                putExtra("SHOW_MEAL", true)
+            }
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             views.setOnClickPendingIntent(R.id.widgetContainer, pendingIntent)
 
@@ -112,7 +114,7 @@ class MealWidgetProvider : AppWidgetProvider() {
                     val rawMeal = rows[0].DDISH_NM ?: ""
                     // Remove <br/> and format
                     val cleanedMeal = rawMeal.replace("<br/>", "\n")
-                        .replace("(", " (")
+                        .replace(Regex("\\([^)]*\\)"), "")
                         .replace(".", ".\u200B")
 
                     val entity = MealEntity(
