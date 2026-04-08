@@ -130,6 +130,11 @@ class MainActivity : AppCompatActivity() {
             showMealPlanScreen()
         }
 
+        binding.btnSettings.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnBackToTimetable.setOnClickListener {
             showTimetableScreen()
         }

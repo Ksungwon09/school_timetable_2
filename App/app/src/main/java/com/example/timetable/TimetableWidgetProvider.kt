@@ -99,7 +99,32 @@ class TimetableWidgetProvider : AppWidgetProvider() {
                         for (item in localData) {
                             val rowView = RemoteViews(context.packageName, R.layout.item_widget_row)
                             rowView.setTextViewText(R.id.tvPeriod, "${item.period}교시")
-                            rowView.setTextViewText(R.id.tvSubject, item.subject)
+
+                            var subjectText = item.subject
+                            if (subjectText.length > 13) {
+                                // Find the first space after 12 characters to split the string
+                                val breakIndex = subjectText.indexOf(' ', 12)
+                                if (breakIndex != -1) {
+                                    subjectText = subjectText.substring(0, breakIndex) + "\n  " + subjectText.substring(breakIndex + 1)
+                                }
+                            }
+
+                            if (prefs.widgetTextBold) {
+                                val spannable = android.text.SpannableString(subjectText)
+                                spannable.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, subjectText.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                rowView.setTextViewText(R.id.tvSubject, spannable)
+                            } else {
+                                rowView.setTextViewText(R.id.tvSubject, subjectText)
+                            }
+
+                            // To change size we need to change min/max for autoSize or just set the raw text size.
+                            // Since the widget layout sets AutoSize uniformly (min 14, max 18), we can override it by setting a fixed size if we want
+                            // or adjust the padding. It's safer to just set the fixed text size, overriding the AutoSize constraint.
+                            // However, RemoteViews doesn't have an easy "setAutoTextSizeMin" method.
+                            // Instead we will call setTextViewTextSize to forcefully apply the user setting.
+                            rowView.setTextViewTextSize(R.id.tvPeriod, android.util.TypedValue.COMPLEX_UNIT_SP, prefs.widgetTextSize.toFloat())
+                            rowView.setTextViewTextSize(R.id.tvSubject, android.util.TypedValue.COMPLEX_UNIT_SP, prefs.widgetTextSize.toFloat())
+
                             views.addView(R.id.layoutWidgetTimetable, rowView)
                         }
                     }
